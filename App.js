@@ -1,49 +1,45 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * App class
  *
- * @format
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import type { Persistor } from 'redux-persist/es/types';
+import type { Provider } from 'react-redux';
+import type { Store } from 'redux';
+import { startInitalScreen } from './app/services/navigation';
+import type { ScreenConfig } from './app/flowTypes';
+import { registerScreens } from './app/screens';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
 
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+export default class App {
+  constructor(screens: Array<ScreenConfig>, store: Store, persistor: Persistor, provider: Provider) {
+    this.screens = screens;
+    this.store = store;
+    this.persistor = persistor;
+    this.provider = provider;
+  }
+
+  screens: Array<ScreenConfig>
+
+  store: Store
+
+  persistor: Persistor
+
+  provider: Provider
+
+  /*
+   * @brief Register all screens components to navigator.
+   */
+  _registerScreens() {
+    if (!this.store) throw new Error('redux store has not been configured.');
+    registerScreens(this.screens, this.store, this.provider);
+  }
+
+
+  startApp() {
+    this._registerScreens();
+    // Start app only if all icons are loaded.
+    startInitalScreen();
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});

@@ -1,16 +1,11 @@
-/** @format */
-
-import { Navigation } from "react-native-navigation";
+/*
+ * Entry point of the react native app.
+ * @format
+ */
+import { Provider } from 'react-redux';
+import { screenConfigs } from './app/screens';
+import { store, persistor } from './app/store';
 import App from './App';
 
-Navigation.registerComponent(`navigation.test.WelcomeScreen`, () => App);
-
-Navigation.events().registerAppLaunchedListener(() => {
- Navigation.setRoot({
-   root: {
-     component: {
-       name: "navigation.test.WelcomeScreen"
-     }
-   }
- });
-});
+const app = new App(screenConfigs, store, persistor, Provider);
+app.startApp();
