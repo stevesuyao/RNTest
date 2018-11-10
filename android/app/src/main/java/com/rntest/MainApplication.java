@@ -15,6 +15,8 @@ import com.reactnativenavigation.react.ReactGateway;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage; //<- You must import this
+
 // public class MainApplication extends Application implements ReactApplication {
 public class MainApplication extends NavigationApplication {
 
@@ -38,6 +40,7 @@ public class MainApplication extends NavigationApplication {
        // Add additional packages you require here
        // No need to add RnnPackage and MainReactPackage
        return Arrays.<ReactPackage>asList(
+          new RNSensitiveInfoPackage()
            // eg. new VectorIconsPackage()
        );
    }
@@ -56,7 +59,7 @@ public class MainApplication extends NavigationApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage()
+          new MainReactPackage(),
       );
     }
 
