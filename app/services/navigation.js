@@ -28,7 +28,7 @@ export const goHome = () => Navigation.setRoot({
   },
 });
 
-export const goAuth = () => Navigation.setRoot({
+export const goAuth = (passProps: Object = null) => Navigation.setRoot({
   root: {
     stack: {
       id: 'Auth',
@@ -36,6 +36,7 @@ export const goAuth = () => Navigation.setRoot({
         {
           component: {
             name: screenIDs.LOGIN,
+            passProps,
           },
         },
       ],
@@ -47,7 +48,7 @@ export const popOut = id => Navigation.pop(id);
 
 export const pushIn = (id, name) => Navigation.push(id, { component: { name } });
 
-export const startInitalScreen = () => {
+export const startInitalScreen = (passProps: Object = null) => {
   Navigation.events().registerAppLaunchedListener(() => {
     Navigation.setDefaultOptions({ // global screen's style. Must set before setRoot();
       layout: {
@@ -60,6 +61,7 @@ export const startInitalScreen = () => {
       root: {
         component: {
           name: screenIDs.INIT,
+          passProps,
         },
       },
     });

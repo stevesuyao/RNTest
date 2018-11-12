@@ -8,6 +8,12 @@ const logInRes = {
   },
 };
 
+const logoutRes = {
+  data: {
+    msg: 'success',
+  },
+};
+
 const registerRes = {
   data: {
     registeredGita: {
@@ -29,6 +35,6 @@ export const signUp = payload => logInRes;
 
 export const register = payload => registerRes;
 
-export const logout = () => null;
+export const logout = () => logoutRes;
 
 export const bleRegisteration = () => bleOfflineKey;
