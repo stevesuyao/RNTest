@@ -27,15 +27,20 @@ const styles = StyleSheet.create({
 type Props = {
   name: string,
   login: Function,
+  logout: Function,
+  localPurge: Function,
   componentId: string,
 }
 
 const getLocalData = async () => {
   try {
-    const value = await AsyncStorage.getItem('persist:ocuMobile');
-    if (value !== null) {
+    const res = await AsyncStorage.getItem('persist:ocuMobile');
+    if (res !== null) {
       // We have data!!
+      const value = JSON.parse(res);
       console.log(value);
+      // const user = JSON.parse(value.user);
+      // console.log(user);
     } else console.log('get no value in localStorage!');
   } catch (error) {
     console.log(error);
@@ -48,7 +53,9 @@ const getLocalKeys = async () => {
   });
 };
 
-const Screen = ({ name, login, componentId }: Props) => (
+const Screen = ({
+  name, login, componentId, logout, localPurge,
+}: Props) => (
   <View style={styles.container}>
     <Text style={styles.welcome}>{`This is ${name}`}</Text>
     <Button
@@ -60,7 +67,18 @@ const Screen = ({ name, login, componentId }: Props) => (
         // pushIn(componentId, screenIDs.JOYSTICK);
         getLocalData();
       }}
-      title="test"
+      title="get localData"
+    />
+    <Button
+      onPress={() => {
+        // pushIn(componentId, screenIDs.JOYSTICK);
+        localPurge();
+      }}
+      title="local purge"
+    />
+    <Button
+      onPress={logout}
+      title="logout"
     />
   </View>
 );

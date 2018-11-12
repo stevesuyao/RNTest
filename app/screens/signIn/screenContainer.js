@@ -27,9 +27,10 @@ const screenContainer = (WrappedComponent: React.ComponentType<any>, navigatorSt
       Navigation.events().bindComponent(this);
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
       // Check Bluetooth Status:
-      console.log('component did update.');
+      console.log('auth screen component did update.');
+      console.log(this.props)
     }
 
     static options() {

@@ -24,7 +24,7 @@ export const screenConfigs = [
 ];
 
 
-// Register a screen component
+// Register single screen component
 export const registerComponent = (i: ScreenConfig, store: Store, provider: Provider) => {
   if (i.reducer) {
     Navigation.registerComponentWithRedux(i.id, () => i.screen, provider, store);

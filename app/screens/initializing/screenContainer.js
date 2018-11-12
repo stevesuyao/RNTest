@@ -21,14 +21,17 @@ const screenContainer = (WrappedComponent: React.ComponentType<any>, navigatorSt
     }
 
     async componentDidMount() {
+      const { localPurge } = this.props;
+      console.log(localPurge);
+      console.log(this.props);
       try {
-        console.log('dfjkdfjkd');
+        console.log('init screen did mount.');
         const user = await AsyncStorage.getItem(USER_KEY);
         console.log(`user: ${user}`);
         if (user) {
           goHome();
         } else {
-          goAuth();
+          goAuth({ localPurge });
         }
       } catch (err) {
         console.log(`error: ${err}`);
