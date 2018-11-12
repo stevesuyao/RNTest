@@ -7,8 +7,8 @@ import {
   cancelled,
 } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
-import { centraConfig } from '../services/config';
-import type { ActionTypes } from '../constants/actionTypes';
+import { centraConfig } from '../config';
+import type { ActionType } from '../flowTypes';
 
 export const errorHandle = (error: Object) => {
   let msg;
@@ -20,7 +20,7 @@ export const errorHandle = (error: Object) => {
   return msg;
 };
 
-export function* makeApiCall(apiMethod:Function, types: ActionTypes, ...args: any):any {
+export function* makeApiCall(apiMethod:Function, types: ActionType, ...args: any):any {
   try {
     console.log(...args);
     const { res } = yield race({
@@ -31,7 +31,8 @@ export function* makeApiCall(apiMethod:Function, types: ActionTypes, ...args: an
       throw new Error(centraConfig.TIME_OUT_ERROR);
     }
     console.log(res);
-    yield put({ type: types.SUCCESS, payload: res.data });
+    if (types.hasPayload) yield put({ type: types.SUCCESS, payload: res.data });
+    else yield put({ type: types.SUCCESS });
   } catch (error) {
     const msg = errorHandle(error);
     yield put({ type: types.FAILURE, msg });

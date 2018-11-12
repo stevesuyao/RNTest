@@ -13,18 +13,14 @@ import {
   cancel,
 } from 'redux-saga/effects';
 import {
-  LOGIN,
-  SIGNUP,
-  LOGOUT,
-  makeActionTypes,
+  loginTypes,
+  signupTypes,
+  logoutTypes,
 } from '../constants/actionTypes';
 import { makeApiCall } from './utils';
 import * as CentraAPIs from '../services/mockCentraApis';
 import type { LoginData } from '../flowTypes';
 
-const loginTypes = makeActionTypes(LOGIN);
-const signupTypes = makeActionTypes(SIGNUP);
-const logoutTypes = makeActionTypes(LOGOUT);
 
 export function* authorize(payload: LoginData):any {
   return yield makeApiCall(CentraAPIs.login, loginTypes, payload);
