@@ -5,22 +5,18 @@
  */
 
 import { createStore, applyMiddleware } from 'redux';
-import { persistStore } from 'redux-persist';
-import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 import type { Reducer } from 'redux';
-import type { Persistor } from 'redux-persist/es/types';
-import rootSaga from '../sagas';
 
-export const configureStore = (reducer: Reducer) => {
+const configureStore = (reducer: Reducer, ...middleware:any) => {
   let store;
-  const sagaMiddleware = createSagaMiddleware();
   if (__DEV__) { /* eslint no-undef: 0 */
     const logger = createLogger();
-    store = createStore(reducer, applyMiddleware(sagaMiddleware, logger));
-  } else store = createStore(reducer, applyMiddleware(sagaMiddleware));
-  sagaMiddleware.run(rootSaga);
+    store = createStore(reducer, applyMiddleware(...middleware, logger));
+  } else store = createStore(reducer, applyMiddleware(...middleware));
   return store;
 };
 
-export const configurePersistStore = (reducer: Reducer):Persistor => persistStore(configureStore(reducer));
+export default configureStore;
+  // const sagaMiddleware = createSagaMiddleware();
+  //   sagaMiddleware.run(rootSaga);

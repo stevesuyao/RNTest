@@ -4,60 +4,17 @@
  * @flow
  */
 
-
-// import { CLEAR_MESSAGE, SEND_MESSAGE } from '../constants/actionTypes';
-//
-// type Message = {
-//   content: string,
-//   type: string,
-// };
-//
-// type MsgAction = {
-//   type: string,
-//   msg: Message,
-// }
-//
-// type MessageState = {
-//   loading: boolean,
-//   message: null | Message,
-// };
-//
-// const initialState = {
-//   loading: false,
-//   message: null,
-// };
-//
-// export const messageReducer = (state: MessageState = initialState, action: MsgAction):MessageState => {
-//   const { type, msg } = action;
-//
-//   switch (type) {
-//     case CLEAR_MESSAGE:
-//       return {
-//         ...state,
-//         message: null,
-//       };
-//     case SEND_MESSAGE:
-//       return {
-//         ...state,
-//         loading: false,
-//         message: msg,
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
-// import { makeActionTypes } from '../constants/actionTypes';
 import reduceReducers from 'reduce-reducers'; // NOTE: use reduceReducer to make a shared state.
+// import { combineReducers } from 'redux';
 import type { Reducer } from 'redux';
 import { persistReducer } from 'redux-persist';
 import type { PersistConfig } from 'redux-persist/es/types';
 import _ from 'lodash';
-import * as MessageTypes from '../constants/messageTypes';
-import type { ActionTypes } from '../constants/actionTypes';
-import type { ScreenConfig } from '../flowTypes';
+import { messageTypes } from '../constants/messages';
+import type { ActionType, ScreenConfig } from '../flowTypes';
 
-export const createReducer = (types: ActionTypes):Function => {
+
+export const createReducer = (types: ActionType):Function => {
   const {
     REQUEST,
     SUCCESS,
@@ -84,7 +41,7 @@ export const createReducer = (types: ActionTypes):Function => {
           isLoading: false,
           message: {
             content: action.msg,
-            type: MessageTypes.ERROR,
+            type: messageTypes.ERROR,
           },
         };
       case CANCELLED:
@@ -93,7 +50,7 @@ export const createReducer = (types: ActionTypes):Function => {
           isLoading: false,
           message: {
             content: action.msg,
-            type: MessageTypes.WARN,
+            type: messageTypes.WARN,
           },
         };
       default:
@@ -104,10 +61,10 @@ export const createReducer = (types: ActionTypes):Function => {
   return reducer;
 };
 
-export const createRootReducer = (screens: Array<ScreenConfig>) => {
+export const createRootReducer = (screens: Array<ScreenConfig>, ...reducers: Reducer) => {
   const extract = (i: ScreenConfig) => i.reducer;
-  const reducers = _.compact(_.map(screens, extract)); // remove falsey values.
-  return reduceReducers(...reducers);
+  const screenReducers = _.compact(_.map(screens, extract)); // remove falsey values.
+  return reduceReducers(...screenReducers, ...reducers);
 };
 
 export const createPersistedReducer = (config: PersistConfig, reducer: Reducer) => persistReducer(config, reducer);
