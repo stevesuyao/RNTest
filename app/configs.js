@@ -47,8 +47,8 @@ export const senesitveStorageConfig = {
 };
 
 export const iconImagesConfig = {
-  sideMenu: 'hamburger',
-  // profile: 'userProfile',
-  // search: 'search',
-  // edit: 'editingPencil',
+  menu: { key: 'menu', name: 'hamburger', size: 15 },
+  profile: { key: 'profile', name: 'userProfile', size: 30 },
+  search: { key: 'search', name: 'search', size: 30 },
+  edit: { key: 'edit', name: 'editingPencil', size: 30 },
 };

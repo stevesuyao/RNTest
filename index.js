@@ -13,9 +13,10 @@ import rootSaga from './app/sagas';
 import defaultReducer from './app/reducers/defaultReducer';
 import {
   persistConfig, sensitivePersistConfig, senesitveStorageConfig, iconImagesConfig,
-} from './app/config';
+} from './app/configs';
 import sensitiveReducer from './app/reducers/sensitiveReducer';
 import icoMoonSeletions from './app/assets/vectors/selection.json';
+
 
 const app = new App(screenConfigs);
 
@@ -40,8 +41,13 @@ app.setStore(sagaMiddleware);
 // run saga middleware after apply it to store.
 sagaMiddleware.run(rootSaga);
 
-// set native button images.
+// config images we want to load from vector selections.
 app.setIconImages(iconImagesConfig, icoMoonSeletions);
 
-// start app.
+// choose a navigation lib to use.
+app.setNavigator('RNN2');
+
+// bootstrap
 app.bootStrap();
+
+console.log(app._nativeIcons);

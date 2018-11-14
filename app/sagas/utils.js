@@ -7,7 +7,7 @@ import {
   cancelled,
 } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
-import { centraConfig } from '../config';
+import { centraConfig } from '../configs';
 import type { ActionType } from '../flowTypes';
 
 export const errorHandle = (error: Object) => {

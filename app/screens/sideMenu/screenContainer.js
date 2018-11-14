@@ -1,47 +1,34 @@
 /**
  * Container component of garage Screen
+ *
+ * @flow
  */
 
 /* eslint-disable react/no-unused-prop-types */
-// @flow
 
+import _ from 'lodash';
 import * as React from 'react';
-import { Navigation } from 'react-native-navigation';
+import type { Props } from './propsType';
 
-const screenContainer = (WrappedComponent: React.ComponentType<any>, navigatorStyle: {}) => (
+const screenContainer = (WrappedComponent: React.ComponentType<any>) => (
 
-  class extends React.PureComponent {
-    constructor(props) {
-      super(props);
-      Navigation.events().bindComponent(this);
+  class extends React.PureComponent<Props> {
+    static defaultProps = {
+      user: {},
+      logout: _.noop,
     }
+
 
     componentDidMount() {
-      console.log('component did mount.');
-    }
-
-    static options() {
-      return navigatorStyle;
-    }
-
-    componentDidApper() {
-      console.log(this);
-      console.log('component did appear.');
-    }
-
-    componentDidDisapper() {
-      console.log(this);
-      console.log('component did disappear');
-    }
-
-    navigationButtonPressed({ buttonId }) {
-      console.log(this);
-      console.log(buttonId);
+      console.log('side menu component did mount.');
+      console.log(this.props);
     }
 
     render() {
       return (
-        <WrappedComponent />
+        <WrappedComponent
+          {...this.props}
+        />
       );
     }
   });

@@ -1,19 +1,21 @@
 // @flow
 
-import { connect } from 'react-redux';
 import screenIDs from '../../constants/screenIDs';
 import Screen from './Screen';
 import screenContainer from './screenContainer';
-import navigatorStyle from './navigatorStyle';
 import { mapDispatchToProps } from './actions';
 import { reducer, mapStateToProps } from './reducer';
+import navigatorConfig from './navigatorConfig';
 
-const Component = connect(mapStateToProps, mapDispatchToProps)(screenContainer(Screen, navigatorStyle));
+const screen = screenContainer(Screen);
 
 const screenConfig = {
-  screen: Component,
+  screen,
   id: screenIDs.LOGIN,
   reducer,
+  navigatorConfig,
+  mapStateToProps,
+  mapDispatchToProps,
 };
 
 export default screenConfig;

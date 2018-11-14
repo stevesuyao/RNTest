@@ -47,3 +47,6 @@ export const signupTypes = makeActionTypes(SIGNUP);
 
 const LOGOUT = 'LOGOUT';
 export const logoutTypes = makeActionTypes(LOGOUT, false);
+
+// Unique aciont types
+export const GET_LOCAL_USER_SUCCESS = 'GET_LOCAL_USER_SUCCESS';

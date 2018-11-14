@@ -29,7 +29,7 @@ const screenContainer = (WrappedComponent: React.ComponentType<any>, navigatorSt
       console.log('component did appear.');
     }
 
-    componentDidDisapper() {
+    componentDidDisappear() {
       console.log(this);
       console.log('component did disappear');
     }

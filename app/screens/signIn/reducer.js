@@ -9,6 +9,7 @@ export const reducer = reduceReducers(loginReducer, logoutReducer);
 
 export const mapStateToProps = (state: Object) => (
   {
-    isNetConnected: state.isNetConnected,
+    // isNetConnected: state.isNetConnected,
+    user: state.main.user,
   }
 );

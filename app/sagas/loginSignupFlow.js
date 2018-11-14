@@ -16,6 +16,7 @@ import {
   loginTypes,
   signupTypes,
   logoutTypes,
+  GET_LOCAL_USER_SUCCESS,
 } from '../constants/actionTypes';
 import { makeApiCall } from './utils';
 import * as CentraAPIs from '../services/mockCentraApis';
@@ -28,7 +29,7 @@ export function* authorize(payload: LoginData):any {
 
 export function* signup(payload: LoginData):any {
   // TODO: need redux-persist here: yield call(LocalAPIs.recordUser, res.data);
-  return yield makeApiCall(CentraAPIs.signup, signupTypes, payload);
+  return yield makeApiCall(CentraAPIs.signUp, signupTypes, payload);
 }
 
 
@@ -40,11 +41,11 @@ export function* logout():any {
 // Login flow
 export function* loginFlow():any {
   while (true) {
-    // NOTE: yield take `LOGIN_REQUEST_SUCCESS` for existed user.
+    // NOTE: take `GET_LOCAL_USER_SUCCESS` for existed user.
     // TODO: handle the expired token.
-    const action = yield take([loginTypes.REQUEST, loginTypes.SUCCESS]);
+    const action = yield take([loginTypes.REQUEST, GET_LOCAL_USER_SUCCESS]);
     const task = action.type === loginTypes.REQUEST ? yield fork(authorize, action.payload) : null;
-    const nextAction = yield take([logoutTypes.REQUEST, logoutTypes.FAILURE]);
+    const nextAction = yield take([logoutTypes.REQUEST, loginTypes.FAILURE]);
     if (task !== null) yield cancel(task);
     if (nextAction.type === logoutTypes.REQUEST) yield call(logout);
   }
@@ -55,7 +56,7 @@ export function* signupFlow():any {
   while (true) {
     const { payload } = yield take(signupTypes.REQUEST);
     const task = yield fork(signup, payload); // non blocking call
-    const action = yield take([logoutTypes.REQUEST, logoutTypes.FAILURE]);
+    const action = yield take([logoutTypes.REQUEST, signupTypes.FAILURE]);
     if (task !== null) yield cancel(task);
     if (action.type === logoutTypes.REQUEST) yield call(logout);
   }

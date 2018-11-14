@@ -1,36 +1,31 @@
 /**
- * Container component of sigin Screen
+ * Container component of garage Screen
  *
  * @flow
  */
 
 /* eslint-disable react/no-unused-prop-types */
 
-import * as React from 'react';
 import _ from 'lodash';
-import type { Props } from './propsType';
+import * as React from 'react';
 
+type Props = {
+  name: string,
+  signup: Function,
+}
 
 const screenContainer = (WrappedComponent: React.ComponentType<any>) => (
 
   class extends React.PureComponent<Props> {
     static defaultProps = {
-      name: 'authScreen',
-      login: _.noop,
-      goHome: _.noop,
-      goSignup: _.noop,
+      name: 'signupScreen',
+      signup: _.noop,
     }
 
     componentDidMount() {
       // Check Bluetooth Status:
-      console.log('auth screen component did Mount.');
+      console.log('auth screen component did update.');
       console.log(this.props);
-    }
-
-    componentDidUpdate() {
-      const { user, goHome } = this.props;
-      console.log('auth screen component did Update.');
-      if (user !== undefined) goHome();
     }
 
     render() {

@@ -1,4 +1,7 @@
+// @flow
+
 /* eslint react/prefer-stateless-function: 0 */
+
 import React from 'react';
 import {
   View,
@@ -7,8 +10,9 @@ import {
   Button,
   AsyncStorage,
 } from 'react-native';
-import { pushIn } from '../../services/navigation';
-import screenIDs from '../../constants/screenIDs';
+import screenIDs from '../../constants/screenIDs'
+
+import type { Props } from './propsType';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,14 +27,6 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-type Props = {
-  name: string,
-  login: Function,
-  logout: Function,
-  localPurge: Function,
-  componentId: string,
-}
 
 const getLocalData = async () => {
   try {
@@ -54,7 +50,7 @@ const getLocalKeys = async () => {
 };
 
 const Screen = ({
-  name, login, componentId, logout, localPurge,
+  name, componentId, login, pushScreen,
 }: Props) => (
   <View style={styles.container}>
     <Text style={styles.welcome}>{`This is ${name}`}</Text>
@@ -63,23 +59,21 @@ const Screen = ({
       title="SignIn"
     />
     <Button
+      onPress={() => pushScreen(componentId, screenIDs.SIGNUP, null)}
+      title="Signup"
+    />
+    <Button
       onPress={() => {
-        // pushIn(componentId, screenIDs.JOYSTICK);
         getLocalData();
       }}
       title="get localData"
     />
-    <Button
+    {/* <Button
       onPress={() => {
-        // pushIn(componentId, screenIDs.JOYSTICK);
         localPurge();
       }}
       title="local purge"
-    />
-    <Button
-      onPress={logout}
-      title="logout"
-    />
+    /> */}
   </View>
 );
 

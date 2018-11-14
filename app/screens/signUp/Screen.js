@@ -2,37 +2,39 @@
 import React from 'react';
 import {
   View,
-  StyleSheet,
   Text,
+  StyleSheet,
   Button,
 } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: '#FFFCF5',
   },
-  font: {
+  welcome: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
-    color: 'white',
   },
 });
 
 type Props = {
-  // user: Object, // TODO: add UserType
-  logout: Function,
+  name: string,
+  signup: Function,
+  componentId: string,
 }
 
-const Screen = ({ logout }:Props) => (
+const Screen = ({
+  name, signup,
+}: Props) => (
   <View style={styles.container}>
-    <Text style={styles.font}> This is profile menu !</Text>
+    <Text style={styles.welcome}>{`This is ${name}`}</Text>
     <Button
-      onPress={logout}
-      title="logout"
+      onPress={() => signup({ email: 'test', password: '123456' })}
+      title="Signup"
     />
   </View>
 );

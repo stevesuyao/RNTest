@@ -12,12 +12,20 @@ import type { Store as ReduxStore, Reducer as ReduxReducer } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import createSenesitveStorage from 'redux-persist-sensitive-storage';
 import { createIconSetFromIcoMoon } from 'react-native-vector-icons';
-import * as NavigationApis from './app/services/navigation';
-import type { ScreenConfig, SenesitveStorageConfig, PersistConfig } from './app/flowTypes';
+import navigators from './app/navigators';
+import type {
+  ScreenConfig,
+  SenesitveStorageConfig,
+  PersistConfig,
+  TopBarButton,
+  NavigatorName,
+  RNN2Config,
+} from './app/flowTypes';
 import { registerScreens } from './app/screens';
 import createRootReducer from './app/reducers';
 import configureStore from './app/store';
-
+import wrapComponentWithRNN from './app/hoc/wrapComponentWithRNN';
+import * as navigationLibName from './app/constants/navigationLibNames';
 
 export default class App {
   constructor(screenConfigs: Array<ScreenConfig>) {
@@ -30,6 +38,8 @@ export default class App {
     this.persistor = null;
     this._nativeIcons = {};
     this._loadIconImages = () => null;
+    this._navigationWrapper = null;
+    this._navigator = null;
   }
 
   screens: Array<ScreenConfig>
@@ -49,6 +59,10 @@ export default class App {
   _nativeIcons: Object
 
   _loadIconImages: Function
+
+  _navigationWrapper: ?Function
+
+  _navigator: any; // TODO: should be nvaigtor class type.
 
   setLocalStorage = (storage: any) => {
     this.storage = storage;
@@ -92,6 +106,11 @@ export default class App {
     } else this.store = configureStore(this.rootReducer, ...middleware);
   }
 
+  /*
+   * @brief Persist redux store
+   *
+   * @return a Promise
+   */
   _setPersistStore = () => {
     if (!this.storage) return null;
     return new Promise((resolve) => {
@@ -103,45 +122,108 @@ export default class App {
   }
 
   /*
+   * @brief Set a navigation library to use
+   * @TODO: currently support `react-native-navigation-v2`, may add other navigation lib in the future.
+   * @TODO: native codes should be changed.
+   *
+   * @param name
+   */
+  setNavigator = (name: NavigatorName) => {
+    if (!this.store) throw new Error('pls config redux store first');
+    switch (name) {
+      case navigationLibName.RNN2:
+        this._navigator = new navigators[name](this.store, this.persistor);
+        this._navigationWrapper = wrapComponentWithRNN;
+        return;
+      case navigationLibName.RNN1:
+      case navigationLibName.RN:
+      default:
+        this._navigator = null;
+        this._navigationWrapper = null;
+    }
+  };
+
+  /*
    * @brief Register all screens components to navigator.
    */
   _registerScreens = () => {
     if (!this.screens) throw new Error('pls config least one screen.');
     if (!this.store) throw new Error('redux store has not been configured.');
-    registerScreens(this.screens, this.store, Provider);
+    this._updateScreenNavigatorStyles(); // update navigatorStyle before we register screens.
+    registerScreens(this.screens, this.store, Provider, this._navigationWrapper);
   }
 
-  _setNativeIcons = (obj, icon, size) => new Promise((resolve) => {
-    icon.getImageSource(obj.value, size).then((value) => {
-      this._nativeIcons[obj.key] = value;
+  /*
+   * @brief getImageSource from vector
+   *
+   * @return A promise
+   */
+  _setNativeIcons = (obj, icon) => new Promise((resolve) => {
+    const { key, name, size } = obj;
+    icon.getImageSource(name, size).then((value) => {
+      this._nativeIcons[key] = value;
       resolve(true);
     });
   });
-  // this._nativeIcons[obj.key] = icon.getImageSource(obj.value, size);
 
-  setIconImages = (config: Object, icoMoonSeletions: Object) => {
-    if (!config || !icoMoonSeletions) throw new Error('please add config or an icoMoon json file first.');
+  /*
+   * @brief set vector selections we want to use in the app.
+   *
+   * @param config
+   * @parm iconSeletions Vector icon json file.
+   */
+  setIconImages = (config: Object, iconSeletions: Object) => {
+    if (!config || !iconSeletions) throw new Error('please add config or an icoMoon json file first.');
     const iconObjs = [];
-    _.forEach(config, (value, key) => iconObjs.push({ key, value }));
+    _.forEach(config, (value, key) => iconObjs.push({
+      key,
+      name: value.name,
+      size: value.size,
+    }));
     if (iconObjs.length === 0) throw new Error('config file should contain least one key-value pair.');
 
-    const icon = createIconSetFromIcoMoon(icoMoonSeletions);
+    const icon = createIconSetFromIcoMoon(iconSeletions);
 
-    this._loadIconImages = () => _.map(iconObjs, obj => this._setNativeIcons(obj, icon, 30)); // promise array
+    this._loadIconImages = () => _.map(iconObjs, obj => this._setNativeIcons(obj, icon)); // promise array
   }
 
-  startApp = () => {
-    const state = this.store.getState();
-    if (state.sensitive.user) NavigationApis.goHome();
-    // if (this.persistor) startInitalScreen({ localPurge: this.persistor.purge });
-    else NavigationApis.goAuth();
+  /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["i"] }] */
+  _setIcon = (i:TopBarButton, nativeIcons: Object) => {
+    const { imgName } = i;
+    if (imgName && nativeIcons[imgName]) i.icon = nativeIcons[imgName];
+  };
+
+  /*
+   * @brief update screen navigator style
+   * @NOTE should invoke it after loading vector icon images.
+   */
+  _setTopbarBtnImageSrc = (config: RNN2Config) => {
+    const { navigatorStyle } = config;
+    if (!navigatorStyle || !navigatorStyle.topBar) return;
+    const { leftButtons, rightButtons } = navigatorStyle.topBar;
+    if (leftButtons && leftButtons.length > 0) _.forEach(leftButtons, i => this._setIcon(i, this._nativeIcons));
+    if (rightButtons && leftButtons.length > 0) _.forEach(rightButtons, i => this._setIcon(i, this._nativeIcons));
+  };
+
+  _updateScreenNavigatorStyles = () => {
+    if (!this._nativeIcons || !this._navigator) return;
+    if (this._navigator.name === navigationLibName.RNN2) {
+      _.forEach(this.screens, (i) => {
+        if (i.navigatorConfig) this._setTopbarBtnImageSrc(i.navigatorConfig);
+      });
+    }
+    // TODO: add supports for other navigation libraries.
+  }
+
+  _startApp = () => {
+    if (!this._navigator || !this._navigator.start) throw new Error('please set a valid navigator first.');
+    this._navigator.setPersistor(this.persistor);
+    this._navigator.start();
   }
 
   bootStrap = async () => {
-    this._registerScreens();
-
     await Promise.all([this._setPersistStore(), ...this._loadIconImages()]);
-
-    this.startApp();
+    this._registerScreens();
+    this._startApp();
   }
 }

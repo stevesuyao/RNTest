@@ -6,37 +6,30 @@
 // @flow
 
 import * as React from 'react';
-import { Navigation } from 'react-native-navigation';
+import _ from 'lodash';
+import type { Props } from './propsType';
 
-const screenContainer = (WrappedComponent: React.ComponentType<any>, navigatorStyle: {}) => (
+const screenContainer = (WrappedComponent: React.ComponentType<any>) => (
 
-  class extends React.PureComponent {
-    constructor(props) {
-      super(props);
-      Navigation.events().bindComponent(this);
+  class extends React.PureComponent<Props> {
+    static defaultProps = {
+      localPurge: _.noop,
+      goAuth: _.noop,
+      user: {},
     }
 
     componentDidMount() {
-      console.log('component did mount.');
+      console.log(' home screen did mount.');
+      console.log(this.props);
     }
 
-    static options() {
-      return navigatorStyle;
-    }
-
-    componentDidApper() {
-      console.log(this);
-      console.log('component did appear.');
-    }
-
-    componentDidDisapper() {
-      console.log(this);
-      console.log('component did disappear');
-    }
-
-    navigationButtonPressed({ buttonId }) {
-      console.log(this);
-      console.log(buttonId);
+    componentDidUpdate() {
+      const { user, goAuth, localPurge } = this.props;
+      if (!user) {
+        console.log('log out, no user');
+        localPurge();
+        goAuth();
+      }
     }
 
     render() {

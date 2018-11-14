@@ -1,22 +1,22 @@
 /**
-* login action
+* signup actions
 *
 * @flow
 */
 
 import type { Dispatch } from 'redux';
-import { loginTypes } from '../../constants/actionTypes';
+import { signupTypes } from '../../constants/actionTypes';
 import type { LoginData } from '../../flowTypes';
 
 // Define actions
-export const login = (payload: LoginData) => ({
-  type: loginTypes.REQUEST,
+export const signup = (payload: LoginData) => ({
+  type: signupTypes.REQUEST,
   payload,
 });
 
 // Map dispath to props.
 export const mapDispatchToProps = (dispatch: Dispatch) => (
   {
-    login: (data: LoginData) => dispatch(login(data)),
+    signup: (data: LoginData) => dispatch(signup(data)),
   }
 );
